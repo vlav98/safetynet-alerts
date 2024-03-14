@@ -22,5 +22,6 @@ public class SafetynetAlertsApplication implements CommandLineRunner {
         RawData rawData = ReadDataFromFile.getData();
         System.out.println(rawData);
         PersonRepository.persons = rawData.getPersons();
+        MedicalRecordRepository.medicalRecords = rawData.getMedicalRecords();
     }
 }
