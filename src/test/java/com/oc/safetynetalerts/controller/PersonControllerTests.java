@@ -1,11 +1,12 @@
-package com.oc.safetynetalerts;
+package com.oc.safetynetalerts.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oc.safetynetalerts.controller.PersonController;
 import com.oc.safetynetalerts.model.Person;
 import com.oc.safetynetalerts.repository.PersonRepository;
 import com.oc.safetynetalerts.service.PersonService;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -25,17 +27,19 @@ public class PersonControllerTests {
     @Autowired
     private MockMvc mockMvc;
 
-
     @MockBean
-    private PersonRepository personRepository;
+    private PersonService personService;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Autowired
     private PersonController personController;
 
+    private Person person = new Person();
 
-    @Test
-    public void addPersonTest() throws Exception {
-        Person person = new Person();
+    @BeforeEach
+    public void setUp() {
         person.setFirstName("John");
         person.setLastName("Doe");
         person.setAddress("123 Main St");
@@ -43,34 +47,45 @@ public class PersonControllerTests {
         person.setZip("12345");
         person.setEmail("john.doe@example.com");
         person.setPhone("0102030405");
+    }
 
-        Mockito.when(personRepository.save(person)).thenReturn(person);
-        Person createdPerson = personController.create(person);
-        assertNotNull(createdPerson); // Assert the controller returns a person
-        Mockito.verify(personRepository).save(person); // Assert the repository is called with the person object
+    @Test
+    public void addPersonTest() throws Exception {
+        // GIVEN
+        Mockito.when(personService.createPerson(person)).thenReturn(true);
 
-        Person mockPerson = new Person();
-
-        mockMvc.perform(MockMvcRequestBuilders
+        // WHEN
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders
                         .post("/person")
-                        .content(new ObjectMapper().writeValueAsString(mockPerson))
+                        .content(objectMapper.writeValueAsString(person))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                // THEN
+                .andExpect(status().isCreated()).andReturn();
+
+        Person resultPerson = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), Person.class);
+
+        Mockito.verify(personService).createPerson(person); // Assert the repository is called with the person object
+        Assertions.assertThat(resultPerson).isNotNull().extracting(Person::getFirstName, Person::getLastName).containsExactly(person.getFirstName(), person.getLastName());
     }
 
     @Test
     public void updatePersonTest() throws Exception {
-//        mockMvc.perform(MockMvcRequestBuilders
-//                    .patch("/person")
-//                    .content(new ObjectMapper().writeValueAsString(new Person()))
-//                    .contentType(MediaType.APPLICATION_JSON)
-//                    .accept(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isOk());
+        Mockito.when(personService.updatePerson(person)).thenReturn(person);
+        Person updatedPerson = personController.update(person);
+
+        Mockito.verify(personService).updatePerson(person);
+        Assertions.assertThat(updatedPerson)
+                .isNotNull()
+                .extracting(Person::getFirstName, Person::getLastName)
+                .containsExactly(person.getFirstName(), person.getLastName());
     }
 
     @Test
     public void deletePersonTest() throws Exception {
+        personController.delete(person);
+
+        Mockito.verify(personService).deletePerson(person);
 //        mockMvc.perform(MockMvcRequestBuilders
 //                    .delete("/person")
 //                    .contentType(MediaType.APPLICATION_JSON))
