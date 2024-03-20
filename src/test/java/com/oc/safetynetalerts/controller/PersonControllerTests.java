@@ -5,9 +5,12 @@ import com.oc.safetynetalerts.controller.PersonController;
 import com.oc.safetynetalerts.model.Person;
 import com.oc.safetynetalerts.repository.PersonRepository;
 import com.oc.safetynetalerts.service.PersonService;
+import org.apache.coyote.BadRequestException;
 import org.assertj.core.api.Assertions;
+import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import static org.mockito.ArgumentMatchers.any;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -17,6 +20,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
@@ -36,10 +40,11 @@ public class PersonControllerTests {
     @Autowired
     private PersonController personController;
 
-    private Person person = new Person();
+    private final Person person = new Person();
 
     @BeforeEach
     public void setUp() {
+        // GIVEN
         person.setFirstName("John");
         person.setLastName("Doe");
         person.setAddress("123 Main St");
@@ -52,11 +57,10 @@ public class PersonControllerTests {
     @Test
     public void addPersonTest() throws Exception {
         // GIVEN
-        Mockito.when(personService.createPerson(person)).thenReturn(true);
 
         // WHEN
-        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders
-                        .post("/person")
+        Mockito.when(personService.createPerson(person)).thenReturn(true);
+        MvcResult mvcResult = mockMvc.perform(post("/person")
                         .content(objectMapper.writeValueAsString(person))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -67,6 +71,20 @@ public class PersonControllerTests {
 
         Mockito.verify(personService).createPerson(person); // Assert the repository is called with the person object
         Assertions.assertThat(resultPerson).isNotNull().extracting(Person::getFirstName, Person::getLastName).containsExactly(person.getFirstName(), person.getLastName());
+    }
+
+    @Test
+    public void addDuplicatePersonTest() throws Exception {
+
+        // WHEN
+        Mockito.when(personService.createPerson(person)).thenReturn(false);
+        Exception exception = assertThrows(BadRequestException.class, () -> personController.create(person));
+        assertEquals(exception.getClass(), BadRequestException.class);
+//        mockMvc.perform(post("/person")
+//                        .content(objectMapper.writeValueAsString(person))
+//                        .contentType(MediaType.APPLICATION_JSON))
+//                // THEN
+//                .andExpect(status().isBadRequest()).andExpect(result -> assertInstanceOf(BadRequestException.class, result.getResolvedException()));
     }
 
     @Test
