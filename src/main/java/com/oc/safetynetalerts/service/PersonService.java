@@ -12,7 +12,7 @@ public class PersonService {
     @Autowired
     private PersonRepository personRepository;
 
-    public Person createPerson(Person person) {
+    public boolean createPerson(Person person) {
         return personRepository.save(person);
     }
 

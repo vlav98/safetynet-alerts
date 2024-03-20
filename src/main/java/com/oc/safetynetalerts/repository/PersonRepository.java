@@ -17,9 +17,15 @@ public class PersonRepository {
                 .orElse(null);
     }
 
-    public Person save(Person person) {
-        persons.add(person);
-        return person;
+    public boolean save(Person person) {
+        if (person != null && persons.stream()
+                .filter(filteredPerson -> filteredPerson.getFirstName().equals(person.getFirstName())
+                        && filteredPerson.getLastName().equals(person.getLastName()))
+                .findFirst().isEmpty()) {
+            persons.add(person);
+            return true;
+        }
+        return false;
     }
 
     public Person updateByFullName(Person person) {

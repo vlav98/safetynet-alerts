@@ -1,6 +1,7 @@
 package com.oc.safetynetalerts;
 
 import com.oc.safetynetalerts.model.RawData;
+import com.oc.safetynetalerts.repository.FireStationRepository;
 import com.oc.safetynetalerts.repository.MedicalRecordRepository;
 import com.oc.safetynetalerts.repository.PersonRepository;
 import com.oc.safetynetalerts.utils.ReadDataFromFile;
@@ -23,5 +24,6 @@ public class SafetynetAlertsApplication implements CommandLineRunner {
         System.out.println(rawData);
         PersonRepository.persons = rawData.getPersons();
         MedicalRecordRepository.medicalRecords = rawData.getMedicalRecords();
+        FireStationRepository.fireStations = rawData.getFireStations();
     }
 }
