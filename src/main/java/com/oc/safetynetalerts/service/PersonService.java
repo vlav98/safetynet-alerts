@@ -16,7 +16,7 @@ public class PersonService {
         return personRepository.save(person);
     }
 
-    public Person updatePerson(Person person) {
+    public boolean updatePerson(Person person) {
         return personRepository.updateByFullName(person);
     }
 

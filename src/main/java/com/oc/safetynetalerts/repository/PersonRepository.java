@@ -28,13 +28,14 @@ public class PersonRepository {
         return false;
     }
 
-    public Person updateByFullName(Person person) {
+    public boolean updateByFullName(Person person) {
         int searchedPersonIndex = persons.indexOf(findPeopleByFullName(person.getFirstName(), person.getLastName()));
         if (searchedPersonIndex != -1) {
             System.out.println("index: "+ searchedPersonIndex);
             persons.set(searchedPersonIndex, person);
+            return true;
         }
-        return persons.get(searchedPersonIndex);
+        return false;
     }
 
     public void deleteByFullName(Person person) {

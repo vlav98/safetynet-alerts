@@ -11,6 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.mockito.ArgumentMatchers.any;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -20,6 +21,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -73,6 +75,22 @@ public class PersonControllerTests {
         Assertions.assertThat(resultPerson).isNotNull().extracting(Person::getFirstName, Person::getLastName).containsExactly(person.getFirstName(), person.getLastName());
     }
 
+//    @Test
+//    void shouldThrowBadRequestException() throws Exception {
+//        // GIVEN
+//
+//        // WHEN
+//        Mockito.when(personService.createPerson(person)).thenReturn(false);
+//        MvcResult mvcResult = mockMvc.perform(post("/person")
+//                        .content(objectMapper.writeValueAsString(person))
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .accept(MediaType.APPLICATION_JSON))
+//                // THEN
+//                .andExpect(status().isBadRequest()).andReturn();
+//        var message = mvcResult.getResponse().getContentAsString();
+//        Assertions.assertThat(message).isEqualTo("Can not add this person: the person you are trying to add is a duplicate.");
+//    }
+
     @Test
     public void addDuplicatePersonTest() throws Exception {
 
@@ -89,8 +107,14 @@ public class PersonControllerTests {
 
     @Test
     public void updatePersonTest() throws Exception {
-        Mockito.when(personService.updatePerson(person)).thenReturn(person);
-        Person updatedPerson = personController.update(person);
+        Mockito.when(personService.updatePerson(person)).thenReturn(true);
+        MvcResult mvcResult = mockMvc.perform(patch("/person")
+                        .content(objectMapper.writeValueAsString(person))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                // THEN
+                .andExpect(status().isOk()).andReturn();
+        Person updatedPerson = objectMapper.readValue(mvcResult.getResponse().getContentAsString(),Person.class);
 
         Mockito.verify(personService).updatePerson(person);
         Assertions.assertThat(updatedPerson)
@@ -101,12 +125,12 @@ public class PersonControllerTests {
 
     @Test
     public void deletePersonTest() throws Exception {
-        personController.delete(person);
+        mockMvc.perform(MockMvcRequestBuilders
+                    .delete("/person")
+                    .content(objectMapper.writeValueAsString(person))
+                    .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
 
         Mockito.verify(personService).deletePerson(person);
-//        mockMvc.perform(MockMvcRequestBuilders
-//                    .delete("/person")
-//                    .contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isOk());
     }
 }
