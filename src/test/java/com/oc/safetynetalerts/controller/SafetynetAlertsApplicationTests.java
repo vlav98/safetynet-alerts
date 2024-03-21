@@ -1,4 +1,4 @@
-package com.oc.safetynetalerts;
+package com.oc.safetynetalerts.controller;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

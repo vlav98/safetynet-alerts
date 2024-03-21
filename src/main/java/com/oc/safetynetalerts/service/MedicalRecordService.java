@@ -12,11 +12,11 @@ public class MedicalRecordService {
     @Autowired
     private MedicalRecordRepository medicalRecordRepository;
 
-    public MedicalRecord createMedicalRecord(MedicalRecord medicalRecord) {
+    public boolean createMedicalRecord(MedicalRecord medicalRecord) {
         return medicalRecordRepository.save(medicalRecord);
     }
 
-    public MedicalRecord updateMedicalRecord(MedicalRecord medicalRecord) {
+    public boolean updateMedicalRecord(MedicalRecord medicalRecord) {
         return medicalRecordRepository.updateByFullName(medicalRecord);
     }
 
@@ -25,6 +25,6 @@ public class MedicalRecordService {
     }
 
     public List<MedicalRecord> getAllMedicalRecords() {
-        return medicalRecordRepository.getAllMedicalRecords();
+        return MedicalRecordRepository.medicalRecords;
     }
 }

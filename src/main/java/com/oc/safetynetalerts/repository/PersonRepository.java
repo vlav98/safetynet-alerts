@@ -31,7 +31,6 @@ public class PersonRepository {
     public boolean updateByFullName(Person person) {
         int searchedPersonIndex = persons.indexOf(findPeopleByFullName(person.getFirstName(), person.getLastName()));
         if (searchedPersonIndex != -1) {
-            System.out.println("index: "+ searchedPersonIndex);
             persons.set(searchedPersonIndex, person);
             return true;
         }

@@ -21,7 +21,6 @@ public class SafetynetAlertsApplication implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         RawData rawData = ReadDataFromFile.getData();
-        System.out.println(rawData);
         PersonRepository.persons = rawData.getPersons();
         MedicalRecordRepository.medicalRecords = rawData.getMedicalRecords();
         FireStationRepository.fireStations = rawData.getFireStations();

@@ -16,18 +16,23 @@ public class MedicalRecordRepository {
                 .orElse(null);
     }
 
-    public MedicalRecord save(MedicalRecord medicalRecord) {
-        medicalRecords.add(medicalRecord);
-        return medicalRecord;
+    public boolean save(MedicalRecord medicalRecord) {
+        if (medicalRecord != null && medicalRecords.stream()
+                .filter(filteredMedicalRecord -> filteredMedicalRecord.getFirstName().equals(medicalRecord.getFirstName())
+                && filteredMedicalRecord.getLastName().equals(medicalRecord.getLastName())).findFirst().isEmpty()) {
+            medicalRecords.add(medicalRecord);
+            return true;
+        }
+        return false;
     }
 
-    public MedicalRecord updateByFullName(MedicalRecord medicalRecord) {
+    public boolean updateByFullName(MedicalRecord medicalRecord) {
         int searchedMedicalRecordIndex = medicalRecords.indexOf(findMedicalRecordByFullName(medicalRecord.getFirstName(), medicalRecord.getLastName()));
         if (searchedMedicalRecordIndex != -1) {
             medicalRecords.set(searchedMedicalRecordIndex, medicalRecord);
+            return true;
         }
-        return medicalRecords.get(searchedMedicalRecordIndex);
-
+        return false;
     }
 
     public void deleteByFullName(MedicalRecord medicalRecord) {
@@ -37,7 +42,4 @@ public class MedicalRecordRepository {
         }
     }
 
-    public List<MedicalRecord> getAllMedicalRecords() {
-        return medicalRecords;
-    }
 }

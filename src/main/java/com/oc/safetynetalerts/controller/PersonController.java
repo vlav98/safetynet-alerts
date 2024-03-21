@@ -23,20 +23,24 @@ public class PersonController {
     private static final Logger logger = LogManager.getLogger("PersonController");
 
     @PostMapping(value = "/person")
-    public ResponseEntity<Person> create(@RequestBody Person person) throws BadRequestException {
+    public ResponseEntity<?> create(@RequestBody Person person) throws BadRequestException {
         logger.info("Received POST Request : /person");
         if (personService.createPerson(person)) {
             return ResponseEntity.status(HttpStatus.CREATED).contentType(MediaType.APPLICATION_JSON).body(person);
         } else {
-            throw new BadRequestException("Can not add this person: the person you are trying to add is a duplicate.");
+            return ResponseEntity.badRequest().body("Can not add this person: the person you are trying to add is a duplicate.");
         }
     }
 
     @PatchMapping
     @RequestMapping(value = "/person", method = RequestMethod.PATCH)
-    public Person update(@RequestBody Person person) {
+    public ResponseEntity<?> update(@RequestBody Person person) throws BadRequestException {
         logger.info("Received PATCH Request : /person");
-        return personService.updatePerson(person);
+        if (personService.updatePerson(person)) {
+            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(person);
+        } else {
+            return ResponseEntity.badRequest().body("Can not edit this person: the person you are trying to update doesn't exist.");
+        }
     }
 
     @DeleteMapping
