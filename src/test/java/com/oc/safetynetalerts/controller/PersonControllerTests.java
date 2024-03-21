@@ -75,21 +75,21 @@ public class PersonControllerTests {
         Assertions.assertThat(resultPerson).isNotNull().extracting(Person::getFirstName, Person::getLastName).containsExactly(person.getFirstName(), person.getLastName());
     }
 
-//    @Test
-//    void shouldThrowBadRequestException() throws Exception {
-//        // GIVEN
-//
-//        // WHEN
-//        Mockito.when(personService.createPerson(person)).thenReturn(false);
-//        MvcResult mvcResult = mockMvc.perform(post("/person")
-//                        .content(objectMapper.writeValueAsString(person))
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON))
-//                // THEN
-//                .andExpect(status().isBadRequest()).andReturn();
-//        var message = mvcResult.getResponse().getContentAsString();
-//        Assertions.assertThat(message).isEqualTo("Can not add this person: the person you are trying to add is a duplicate.");
-//    }
+    @Test
+    void shouldThrowBadRequestException() throws Exception {
+        // GIVEN
+
+        // WHEN
+        Mockito.when(personService.createPerson(person)).thenReturn(false);
+        MvcResult mvcResult = mockMvc.perform(post("/person")
+                        .content(objectMapper.writeValueAsString(person))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                // THEN
+                .andExpect(status().isBadRequest()).andReturn();
+        var message = mvcResult.getResponse().getContentAsString();
+        Assertions.assertThat(message).isEqualTo("Can not add this person: the person you are trying to add is a duplicate.");
+    }
 
     @Test
     public void addDuplicatePersonTest() throws Exception {
