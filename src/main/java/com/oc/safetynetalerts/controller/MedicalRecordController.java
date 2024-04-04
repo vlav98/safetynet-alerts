@@ -19,11 +19,11 @@ public class MedicalRecordController {
     @Autowired
     private MedicalRecordService medicalRecordService;
 
-    private static final Logger logger = LogManager.getLogger("MedicalRecordController");
+    private static final Logger logger = LogManager.getLogger(MedicalRecordController.class.getName());
 
     @PostMapping(value = "/medicalRecord")
     public ResponseEntity<?> create(@RequestBody MedicalRecord medicalRecord) {
-        logger.info("Received POST Request : /medicalRecord");
+        logger.info("Received POST Request : /medicalRecord with Request Body : " + medicalRecord.toString());
         if (medicalRecordService.createMedicalRecord(medicalRecord)) {
             return ResponseEntity.status(HttpStatus.CREATED).contentType(MediaType.APPLICATION_JSON).body(medicalRecord);
         } else {
@@ -34,7 +34,7 @@ public class MedicalRecordController {
     @PatchMapping
     @RequestMapping(value = "/medicalRecord", method = RequestMethod.PATCH)
     public ResponseEntity<?> update(@RequestBody MedicalRecord medicalRecord) {
-        logger.info("Received PATCH Request : /medicalRecord");
+        logger.info("Received PATCH Request : /medicalRecord with Request Body : " + medicalRecord.toString());
         if (medicalRecordService.updateMedicalRecord(medicalRecord)) {
             return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(medicalRecord);
         } else {
@@ -45,12 +45,14 @@ public class MedicalRecordController {
     @DeleteMapping
     @RequestMapping(value = "/medicalRecord", method = RequestMethod.DELETE)
     public void delete(@RequestBody MedicalRecord medicalRecord) {
+        logger.info("Received DELETE Request : /medicalRecord with Request Body : " + medicalRecord.toString());
         medicalRecordService.deleteMedicalRecord(medicalRecord);
     }
 
     @GetMapping
-    @RequestMapping(value = "/medicalRecords", method = RequestMethod.GET)
+    @RequestMapping(value = "/medicalRecord", method = RequestMethod.GET)
     public List<MedicalRecord> getAll() {
+        logger.info("Received GET Request : /medicalRecord");
         return medicalRecordService.getAllMedicalRecords();
     }
 }

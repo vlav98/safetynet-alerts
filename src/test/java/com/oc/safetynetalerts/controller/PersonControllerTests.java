@@ -21,8 +21,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
@@ -76,7 +75,7 @@ public class PersonControllerTests {
     }
 
     @Test
-    void shouldThrowBadRequestException() throws Exception {
+    void shouldThrowBadRequestExceptionOnCreation() throws Exception {
         // GIVEN
 
         // WHEN
@@ -89,20 +88,6 @@ public class PersonControllerTests {
                 .andExpect(status().isBadRequest()).andReturn();
         var message = mvcResult.getResponse().getContentAsString();
         Assertions.assertThat(message).isEqualTo("Can not add this person: the person you are trying to add is a duplicate.");
-    }
-
-    @Test
-    public void addDuplicatePersonTest() throws Exception {
-
-        // WHEN
-        Mockito.when(personService.createPerson(person)).thenReturn(false);
-        Exception exception = assertThrows(BadRequestException.class, () -> personController.create(person));
-        assertEquals(exception.getClass(), BadRequestException.class);
-//        mockMvc.perform(post("/person")
-//                        .content(objectMapper.writeValueAsString(person))
-//                        .contentType(MediaType.APPLICATION_JSON))
-//                // THEN
-//                .andExpect(status().isBadRequest()).andExpect(result -> assertInstanceOf(BadRequestException.class, result.getResolvedException()));
     }
 
     @Test
@@ -123,6 +108,24 @@ public class PersonControllerTests {
                 .containsExactly(person.getFirstName(), person.getLastName());
     }
 
+
+    @Test
+    void shouldThrowBadRequestExceptionOnEdition() throws Exception {
+        // GIVEN
+
+        // WHEN
+        Mockito.when(personService.updatePerson(person)).thenReturn(false);
+        MvcResult mvcResult = mockMvc.perform(patch("/person")
+                        .content(objectMapper.writeValueAsString(person))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                // THEN
+                .andExpect(status().isBadRequest()).andReturn();
+        var message = mvcResult.getResponse().getContentAsString();
+        Assertions.assertThat(message).isEqualTo("Can not edit this person: the person you are trying to update doesn't exist.");
+    }
+
+
     @Test
     public void deletePersonTest() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders
@@ -132,5 +135,14 @@ public class PersonControllerTests {
                 .andExpect(status().isOk());
 
         Mockito.verify(personService).deletePerson(person);
+    }
+
+
+    @Test
+    public void getAllPersons() throws Exception {
+        // WHEN
+        MvcResult mvcResult  = mockMvc.perform(get("/person"))
+                // THEN
+                .andExpect(status().isOk()).andReturn();
     }
 }

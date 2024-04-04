@@ -5,6 +5,8 @@ import lombok.Getter;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Repository
 public class FireStationRepository {
@@ -49,8 +51,9 @@ public class FireStationRepository {
         }
     }
 
-    public List<FireStation> getFireStations(Integer station) {
+    public List<FireStation> getFireStations(Optional<Integer> station) {
         return fireStations.stream()
-                .filter(fireStation -> fireStation.getStation() == station).toList();
+                .filter(fireStation -> station.isEmpty() ||
+                        station.get().equals(fireStation.getStation())).toList();
     }
 }

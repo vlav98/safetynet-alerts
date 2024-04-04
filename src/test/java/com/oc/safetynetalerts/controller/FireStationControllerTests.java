@@ -3,7 +3,6 @@ package com.oc.safetynetalerts.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oc.safetynetalerts.model.FireStation;
 import com.oc.safetynetalerts.service.FireStationService;
-import com.oc.safetynetalerts.service.FireStationService;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,13 +15,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import java.util.Arrays;
-import java.util.List;
-
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -68,6 +62,22 @@ public class FireStationControllerTests {
     }
 
     @Test
+    void shouldThrowBadRequestExceptionOnAddition() throws Exception {
+        // GIVEN
+
+        // WHEN
+        Mockito.when(fireStationService.createFireStation(fireStation)).thenReturn(false);
+        MvcResult mvcResult  = mockMvc.perform(post("/fireStation")
+                        .content(objectMapper.writeValueAsString(fireStation))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                // THEN
+                .andExpect(status().isBadRequest()).andReturn();
+        var message = mvcResult.getResponse().getContentAsString();
+        Assertions.assertThat(message).isEqualTo("Can not add this fire station: this fire station you are trying to add is a duplicate.");
+    }
+
+    @Test
     public void updateFireStationByFullNameTest() throws Exception {
         // WHEN
         Mockito.when(fireStationService.updateFireStation(fireStation)).thenReturn(true);
@@ -88,6 +98,22 @@ public class FireStationControllerTests {
     }
 
     @Test
+    void shouldThrowBadRequestExceptionOnEdition() throws Exception {
+        // GIVEN
+
+        // WHEN
+        Mockito.when(fireStationService.createFireStation(fireStation)).thenReturn(false);
+        MvcResult mvcResult  = mockMvc.perform(patch("/fireStation")
+                        .content(objectMapper.writeValueAsString(fireStation))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                // THEN
+                .andExpect(status().isBadRequest()).andReturn();
+        var message = mvcResult.getResponse().getContentAsString();
+        Assertions.assertThat(message).isEqualTo("Can not edit this fire station: this fire station you are trying to update doesn't exist.");
+    }
+
+    @Test
     public void deleteFireStationByFullNameTest() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders
                         .delete("/fireStation")
@@ -97,5 +123,14 @@ public class FireStationControllerTests {
 
 
         Mockito.verify(fireStationService).deleteFireStation(fireStation);
+    }
+
+
+    @Test
+    public void getAllFireStation() throws Exception {
+        // WHEN
+        MvcResult mvcResult  = mockMvc.perform(get("/fireStation"))
+                // THEN
+                .andExpect(status().isOk()).andReturn();
     }
 }

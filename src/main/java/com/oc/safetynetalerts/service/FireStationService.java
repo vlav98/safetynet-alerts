@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class FireStationService {
@@ -24,7 +25,7 @@ public class FireStationService {
         fireStationRepository.deleteByAddress(fireStation.getAddress());
     }
 
-    public List<FireStation> getAllFireStations(Integer station) {
+    public List<FireStation> getAllFireStations(Optional<Integer> station) {
         return fireStationRepository.getFireStations(station);
     }
 }
