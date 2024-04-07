@@ -82,9 +82,7 @@ public class AlertService {
      */
     public List<String> getPhoneList(Integer stationNumber) {
         List<FireStation> fireStationsList = fireStationRepository.findFireStationByStationNumber(stationNumber);
-        if (fireStationsList.isEmpty()) {
-            return null;
-        }
+        if (fireStationsList.isEmpty()) return null;
 
         List<String> phoneList = new ArrayList<>();
 
