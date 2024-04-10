@@ -7,7 +7,6 @@ import java.util.List;
 
 @Repository
 public class PersonRepository {
-    // TODO: ça sera un DAO
     public static List<Person> persons;
 
     public Person findPeopleByFullName(String firstName, String lastName) {
