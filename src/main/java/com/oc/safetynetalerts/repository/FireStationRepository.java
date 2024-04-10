@@ -44,11 +44,13 @@ public class FireStationRepository {
         return false;
     }
 
-    public void deleteByAddress(String address) {
+    public boolean deleteByAddress(String address) {
         int searchedFireStationIndex = fireStations.indexOf(findFireStationByAddress(address));
         if (searchedFireStationIndex != -1) {
             fireStations.remove(searchedFireStationIndex);
+            return true;
         }
+        return false;
     }
 
     public List<FireStation> getFireStations(Optional<Integer> station) {

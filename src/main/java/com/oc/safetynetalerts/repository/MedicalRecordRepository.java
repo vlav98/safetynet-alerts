@@ -35,11 +35,13 @@ public class MedicalRecordRepository {
         return false;
     }
 
-    public void deleteByFullName(MedicalRecord medicalRecord) {
+    public boolean deleteByFullName(MedicalRecord medicalRecord) {
         int searchedPersonIndex = medicalRecords.indexOf(findMedicalRecordByFullName(medicalRecord.getFirstName(), medicalRecord.getLastName()));
         if (searchedPersonIndex != -1) {
             medicalRecords.remove(searchedPersonIndex);
+            return true;
         }
+        return false;
     }
 
 }

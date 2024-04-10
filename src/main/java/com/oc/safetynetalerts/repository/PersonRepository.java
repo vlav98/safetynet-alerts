@@ -37,11 +37,13 @@ public class PersonRepository {
         return false;
     }
 
-    public void deleteByFullName(Person person) {
-        int searchedPersonIndex = persons.indexOf(findPeopleByFullName(person.getFirstName(), person.getLastName()));
+    public boolean deleteByFullName(String firstName, String lastName) {
+        int searchedPersonIndex = persons.indexOf(findPeopleByFullName(firstName, lastName));
         if (searchedPersonIndex != -1) {
             persons.remove(searchedPersonIndex);
+            return true;
         }
+        return false;
     }
 
     public List<Person> getAllPersons() {

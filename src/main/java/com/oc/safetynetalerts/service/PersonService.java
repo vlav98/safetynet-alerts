@@ -21,7 +21,7 @@ public class PersonService {
     }
 
     public void deletePerson(Person person) {
-        personRepository.deleteByFullName(person);
+        personRepository.deleteByFullName(person.getFirstName(), person.getLastName());
     }
 
     public List<Person> getAllPersons() {

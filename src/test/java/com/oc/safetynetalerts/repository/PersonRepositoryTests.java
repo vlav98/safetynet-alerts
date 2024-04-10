@@ -3,36 +3,14 @@ package com.oc.safetynetalerts.repository;
 import com.oc.safetynetalerts.model.Person;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import static org.mockito.Mockito.when;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-
-import java.util.ArrayList;
 import java.util.List;
 
 @SpringBootTest
 public class PersonRepositoryTests {
 
-    @InjectMocks
-    private PersonRepository personRepository;
-
-    @Mock
-    private PersonRepository mockedPersonRepository;
-
-    private List<Person> personList = new ArrayList<>();
-
-    @BeforeEach
-    public void setUp() {
-        for (int i = 0; i<3; i++) {
-            Person person = getPerson(i, "A" + i, "B" + i);
-            personList.add(person);
-        }
-    }
+    PersonRepository personRepository = new PersonRepository();
 
     private static Person getPerson(int i, String firstName, String lastName) {
         String address = String.valueOf(i);
@@ -53,50 +31,70 @@ public class PersonRepositoryTests {
     }
 
     @Test
-    public void findPeopleByFullName_whenPersonExists_returnPerson() {
-//        // GIVEN
-//        Person expectedPerson = getPerson(1, "John", "Smith");
-//        personList.add(expectedPerson);
-//        System.out.println(personList);
-//
-//        // WHEN
-//        Person foundPerson = personRepository.findPeopleByFullName("John", "Smith");
-//
-//        System.out.println(foundPerson);
-//        // THEN
-//        assertEquals(expectedPerson, foundPerson);
+    public void findPeopleByFullNameWhenPersonExistsReturnPerson() {
+        // GIVEN
+        String firstName = "John";
+        String lastName = "Boyd";
+        Person expectedPerson =  getPerson(1, firstName, lastName);
+        // WHEN
+        Person foundPerson = personRepository.findPeopleByFullName(firstName, lastName);
+
+        // THEN
+        assertEquals(expectedPerson, foundPerson);
+        assertThat(foundPerson).isNotNull();
     }
 
 
     @Test
     public void savePersonWithSuccessTest() {
         // GIVEN
-        Person newPerson = getPerson(3, "A3", "B3");
-
+        String firstName = "John";
+        String lastName = "Smith";
+        Person newPerson = getPerson(1, firstName, lastName);
         // WHEN
-        when(mockedPersonRepository.getAllPersons()).thenReturn(personList);
-
         // THEN
         assertThat(personRepository.save(newPerson)).isTrue();
-//        assert(personList.contains(newPerson));
+        Person foundPerson = personRepository.findPeopleByFullName(firstName, lastName);
+        assertThat(foundPerson).isNotNull();
+        assertEquals(newPerson, foundPerson);
     }
     @Test
-    public void canNotSaveNullTest() {
+    public void canNotSavePersonWithNullValueTest() {
         // GIVEN
         // WHEN
         // THEN
         assertThat(personRepository.save(null)).isFalse();
     }
+
+    @Test
+    public void canNotSavePersonWhenPersonExistsTest() {
+        // GIVEN
+        Person newPerson = getPerson(1, "John", "Boyd");
+        // WHEN
+        // THEN
+        assertThat(personRepository.save(newPerson)).isFalse();
+    }
+
+    @Test
+    public void updateExistingPersonTest() {
+        // GIVEN
+        String firstName = "John";
+        String lastName = "Boyd";
+        Person person = getPerson(1, firstName, lastName);
+        // WHEN
+        Boolean isUpdated = personRepository.updateByFullName(person);
+        Person updatedPerson = personRepository.findPeopleByFullName(firstName, lastName);
+        // THEN
+        assertThat(isUpdated).isTrue();
+        assertEquals(person, updatedPerson);
+    }
+
     @Test
     public void canNotUpdateNonExistentPersonTest() {
         // GIVEN
-        String firstName = "John";
-        String lastName = "Smith";
-        Person person = getPerson(3, firstName, lastName);
+        Person person = getPerson(1, "Ally", "Smith");
 
         // WHEN
-        when(mockedPersonRepository.findPeopleByFullName(firstName, lastName)).thenReturn(null);
-
         // THEN
         assertThat(personRepository.updateByFullName(person)).isFalse();
     }
@@ -108,8 +106,58 @@ public class PersonRepositoryTests {
         List<Person> allPersonList = personRepository.getAllPersons();
         // THEN
         assertThat(allPersonList).isNotNull();
-        System.out.println(allPersonList);
-        assertThat(allPersonList.contains(getPerson(0, "A0", "B0"))).isTrue();
     }
 
+    @Test
+    public void deleteExistingPersonTest() {
+        // GIVEN
+        // WHEN
+        // THEN
+        assertThat(personRepository.deleteByFullName("John", "Boyd")).isTrue();
+    }
+
+
+    @Test
+    public void deleteNonExistingPersonTest() {
+        // GIVEN
+        // WHEN
+        // THEN
+        assertThat(personRepository.deleteByFullName("John", "John")).isFalse();
+    }
+
+    @Test
+    public void findPersonWithNonExistingAddress() {
+        // GIVEN
+        // WHEN
+        List<Person> resultList = personRepository.findByAddress("");
+        // THEN
+        assertThat(resultList).isEmpty();
+    }
+
+    @Test
+    public void findPersonWithExistingAddress() {
+        // GIVEN
+        // WHEN
+        List<Person> resultList = personRepository.findByAddress("1509 Culver St");
+        // THEN
+        assertThat(resultList).isNotEmpty();
+    }
+
+    @Test
+    public void findPersonWithNonExistentCity() {
+        // GIVEN
+        // WHEN
+        List<Person> resultList = personRepository.findPersonsByCity("");
+        // THEN
+        assertThat(resultList).isEmpty();
+    }
+
+    @Test
+    public void findPersonByCity() {
+        // GIVEN
+        // WHEN
+        List<Person> resultList = personRepository.findPersonsByCity("Culver");
+        // THEN
+        assertThat(resultList).isNotEmpty();
+    }
 }
