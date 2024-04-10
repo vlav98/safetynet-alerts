@@ -58,7 +58,6 @@ public class PersonControllerTests {
     @Test
     public void addPersonTest() throws Exception {
         // GIVEN
-
         // WHEN
         Mockito.when(personService.createPerson(person)).thenReturn(true);
         MvcResult mvcResult = mockMvc.perform(post("/person")
@@ -75,7 +74,7 @@ public class PersonControllerTests {
     }
 
     @Test
-    void shouldThrowBadRequestExceptionOnCreation() throws Exception {
+    void shouldThrowBadRequestExceptionOnCreationTest() throws Exception {
         // GIVEN
 
         // WHEN
@@ -110,9 +109,8 @@ public class PersonControllerTests {
 
 
     @Test
-    void shouldThrowBadRequestExceptionOnEdition() throws Exception {
+    void shouldThrowBadRequestExceptionOnEditionTest() throws Exception {
         // GIVEN
-
         // WHEN
         Mockito.when(personService.updatePerson(person)).thenReturn(false);
         MvcResult mvcResult = mockMvc.perform(patch("/person")
@@ -128,11 +126,28 @@ public class PersonControllerTests {
 
     @Test
     public void deletePersonTest() throws Exception {
+        // GIVEN
+        // WHEN
+        Mockito.when(personService.deletePerson(person)).thenReturn(true);
         mockMvc.perform(MockMvcRequestBuilders
                     .delete("/person")
                     .content(objectMapper.writeValueAsString(person))
                     .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
+
+        Mockito.verify(personService).deletePerson(person);
+    }
+
+    @Test
+    public void shouldThrowBadRequestExceptionOnDeletion() throws Exception {
+        // GIVEN
+        // WHEN
+        Mockito.when(personService.deletePerson(person)).thenReturn(false);
+        mockMvc.perform(MockMvcRequestBuilders
+                        .delete("/person")
+                        .content(objectMapper.writeValueAsString(person))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
 
         Mockito.verify(personService).deletePerson(person);
     }

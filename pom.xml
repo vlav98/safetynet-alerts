@@ -80,7 +80,6 @@
                 <configuration>
                     <excludes>
                         <exclude>**/com/oc/safetynetalerts/model/*</exclude>
-                        <exclude>**/com/oc/safetynetalerts/service/*</exclude>
                     </excludes>
                 </configuration>
                 <executions>

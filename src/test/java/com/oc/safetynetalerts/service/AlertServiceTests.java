@@ -1,22 +1,15 @@
 package com.oc.safetynetalerts.service;
 
-import com.oc.safetynetalerts.model.FireStation;
-import com.oc.safetynetalerts.model.MedicalRecord;
-import com.oc.safetynetalerts.model.Person;
+import com.oc.safetynetalerts.model.*;
 import com.oc.safetynetalerts.repository.FireStationRepository;
 import com.oc.safetynetalerts.repository.MedicalRecordRepository;
 import com.oc.safetynetalerts.repository.PersonRepository;
-import com.oc.safetynetalerts.utils.CalculateAgeUtil;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -24,21 +17,13 @@ import java.util.List;
 @SpringBootTest
 @AutoConfigureMockMvc
 public class AlertServiceTests {
+    AlertService alertService = new AlertService();
 
-    @MockBean
-    private AlertService alertService;
-
-    @MockBean
-    private PersonRepository personRepository;
-
-    @MockBean
-    private MedicalRecordRepository medicalRecordRepository;
-
-    @MockBean
-    private FireStationRepository fireStationRepository;
-
-    @MockBean
-    private CalculateAgeUtil calculateAgeUtilMock;
+    public AlertServiceTests() {
+        PersonRepository personRepository = new PersonRepository();
+        MedicalRecordRepository medicalRecordRepository = new MedicalRecordRepository();
+        FireStationRepository fireStationRepository = new FireStationRepository();
+    }
 
     @BeforeAll
     static void setUp() {
@@ -46,7 +31,7 @@ public class AlertServiceTests {
     
 
     private static Person getPerson(int i, String firstName, String lastName) {
-        String address = String.valueOf(i);
+        String address = i + "Imaginary Street";
         String city = String.valueOf(i).repeat(3);
         String zip = String.valueOf(i).repeat(5);
         String phone = String.format("%d-%d-%d-%d", i * 111, i * 111, i * 111, i * 1111);
@@ -63,108 +48,140 @@ public class AlertServiceTests {
         return person;
     }
 
-//    @Test
-//    public void getChildrenListSuccessTest() throws Exception{
-//        // GIVEN
-//
-//        String testAddress = "10 aaa";
-//
-//        List<Person> personList = new ArrayList<>();
-//        List<MedicalRecord> medicalRecordList = new ArrayList<>();
-//        for (int i=0; i<4; i++) {
-//            String firstName = "A" + String.valueOf(i).toUpperCase() + "a";
-//            String lastName = "B" + String.valueOf(i).toUpperCase() + "b";
-//            Person person = getPerson(i, firstName, lastName);
-//            personList.add(person);
-//
-//            MedicalRecord medicalRecord = new MedicalRecord();
-//            medicalRecord.setFirstName(firstName);
-//            medicalRecord.setLastName(lastName);
-//            medicalRecord.setBirthdate("01-01-2015");
-//            medicalRecord.setAllergies(new ArrayList<>());
-//            medicalRecord.setMedications(new ArrayList<>());
-//            medicalRecordList.add(medicalRecord);
-//        }
-//
-//        // WHEN
-//        when(personRepository.findByAddress(testAddress)).thenReturn(personList);
-//
-//        when(CalculateAgeUtil.calculateAge(String.valueOf(any(LocalDate.class)), any(LocalDate.class))).thenReturn(10);
-//        when(medicalRecordRepository.findMedicalRecordByFullName("A0a", "B0b")).thenReturn(medicalRecordList.get(0));
-//        when(medicalRecordRepository.findMedicalRecordByFullName("A1a", "B1b")).thenReturn(medicalRecordList.get(1));
-//        when(medicalRecordRepository.findMedicalRecordByFullName("A2a", "B2b")).thenReturn(medicalRecordList.get(2));
-//
-//        // THEN
-//        System.out.println(medicalRecordList.get(0));
-//        assertThat(alertService.getChildrenList(testAddress)).isEqualTo("A1a");
-//        assertThat(alertService.getChildrenList(testAddress).get(1).getFirstName()).isEqualTo("A2a");
-//    }
-//
-//    @Test
-//    public void getChildrenListWithEmptyPersonListTest() throws Exception{
-//        // GIVEN
-//        String testAddress = "10 aaa";
-//
-//        // WHEN
-//        when(personRepository.findByAddress(testAddress)).thenReturn(null);
-//
-//        // THEN
-//        assertThat(alertService.getChildrenList(testAddress)).isNull();
-//    }
-//
-//    @Test
-//    public void getChildrenListWithEmptyMedicalRecordListTest() throws Exception{
-//        // GIVEN
-//        String testAddress = "10 aaa";
-//
-//        // WHEN
-//        when(personRepository.findByAddress(testAddress)).thenReturn(null);
-//
-//        // THEN
-//        assertThat(alertService.getChildrenList(testAddress)).isNull();
-//    }
-//
-//    @Test
-//    public void getPhoneListWithNoFireStationTest() throws Exception {
-//        // GIVEN
-//        Integer stationNumber = 3;
-//        List<FireStation> fireStationList = new ArrayList<>();
-//
-//        // WHEN
-//        when(fireStationRepository.findFireStationByStationNumber(stationNumber)).thenReturn(fireStationList);
-//
-//        // THEN
-//        assertThat(alertService.getPhoneList(stationNumber));
-//    }
-//
-//    @Test
-//    public void getPhoneListTest() throws Exception {
-//        // GIVEN
-//        Integer stationNumber = 2;
-//        FireStation fireStation1 = new FireStation();
-//        fireStation1.setStation(1);
-//        fireStation1.setAddress("Address 1");
-//        FireStation fireStation2 = new FireStation();
-//        fireStation2.setStation(2);
-//        fireStation2.setAddress("Address 2");
-//        List<FireStation> fireStationList = Arrays.asList(fireStation1, fireStation2);
-//        Person person1 = getPerson(1, "A1", "B1");
-//        person1.setAddress("Address 1");
-//        Person person2 = getPerson(2, "A2", "B2");
-//        person2.setAddress("Address 2");
-//
-//        // WHEN
-//        when(fireStationRepository.findFireStationByStationNumber(stationNumber)).thenReturn(fireStationList);
-//        when(personRepository.findByAddress("Address 1")).thenReturn(List.of(person1));
-//        when(personRepository.findByAddress("Address 2")).thenReturn(List.of(person2));
-//
-//        // THEN
-//        List<String> phoneList = alertService.getPhoneList(stationNumber);
-//        System.out.println(person1.toString());
-//        System.out.println(person2.toString());
-//        System.out.println(phoneList);
-//        assertThat(phoneList).isNotNull();
-//        assert(phoneList.contains("111-111-111-1111"));
-//        assert(phoneList.contains("222-222-222-2222"));
-//    }
+    @Test
+    public void getChildrenListSuccessTest() throws Exception{
+        // GIVEN
+        String address = "1509 Culver St";
+
+        // WHEN
+        List<ChildAlertInfo> childAlertInfosList = alertService.getChildrenList(address);
+
+        // THEN
+        assertThat(childAlertInfosList).isNotNull();
+        assertThat(childAlertInfosList.size()).isEqualTo(2);
+        assertThat(childAlertInfosList.get(0).getLastName()).isEqualTo("Boyd");
+        assertThat(childAlertInfosList.get(0).getAge()).isEqualTo(12);
+    }
+
+    @Test
+    public void getChildrenListWithEmptyPersonListTest() throws Exception{
+        // GIVEN
+        String address = "Non Existent Address";
+
+        // WHEN
+        List<ChildAlertInfo> childAlertInfosList = alertService.getChildrenList(address);
+
+        // THEN
+        assertThat(childAlertInfosList).isNull();
+    }
+
+    @Test
+    public void getNullWithInvalidStationNumberPhoneListTest() throws Exception {
+        // GIVEN
+        Integer stationNumber = 6;
+        // WHEN
+        List<String> phoneList = alertService.getPhoneList(stationNumber);
+
+        // THEN
+        assertThat(phoneList).isNull();
+    }
+
+    @Test
+    public void getPhoneListTest() throws Exception {
+        // GIVEN
+        Integer stationNumber = 3;
+        // WHEN
+        List<String> phoneList = alertService.getPhoneList(stationNumber);
+
+        // THEN
+        assertThat(phoneList).isNotNull();
+        assertThat(phoneList.size()).isGreaterThan(2);
+    }
+
+    @Test
+    public void canNotGetResidentListTest() throws Exception {
+        // GIVEN
+        String address = "Non Existent Address";
+        // WHEN
+        List<ResidentInfo> residentInfoList = alertService.getResidentList(address);
+        // THEN
+        assertThat(residentInfoList).isNull();
+    }
+
+    @Test
+    public void getResidentListWithSuccessTest() throws Exception {
+        // GIVEN
+        String address = "1509 Culver St";
+        // WHEN
+        List<ResidentInfo> residentInfoList = alertService.getResidentList(address);
+        // THEN
+        assertThat(residentInfoList).isNotNull();
+        assertThat(residentInfoList.size()).isGreaterThan(2);
+    }
+
+    @Test
+    public void getHouseholdsServedByDistrictTest() throws Exception {
+        // GIVEN
+        List<Integer> stationNumberList = Arrays.asList(0, 1);
+        // WHEN
+        List<HouseholdByAddress> householdByAddressList = alertService.getHouseholdsServedByDistrict(stationNumberList);
+        // THEN
+        assertThat(householdByAddressList).isNotNull();
+        assertThat(householdByAddressList.size()).isGreaterThan(2);
+    }
+
+    @Test
+    public void getNullWithInvalidStationNumberHouseholdsServedByDistrictTest() throws Exception {
+        // GIVEN
+        List<Integer> stationNumberList = new ArrayList<>();
+        // WHEN
+        List<HouseholdByAddress> householdByAddressList = alertService.getHouseholdsServedByDistrict(stationNumberList);
+        // THEN
+        assertThat(householdByAddressList).isNull();
+    }
+
+    @Test
+    public void getPersonInformationTest() throws Exception {
+        // GIVEN
+        String firstName = "John";
+        String lastName = "Boyd";
+        // WHEN
+        ResidentInfo residentInfoResult = alertService.getPersonInformation(firstName, lastName);
+        // THEN
+        assertThat(residentInfoResult).isNotNull();
+        assertThat(residentInfoResult.getLastName()).isEqualTo(lastName);
+    }
+
+
+    @Test
+    public void getNullIfNoneIfNotFoundPersonInformationTest() throws Exception {
+        // GIVEN
+        String firstName = "John";
+        String lastName = "Smith";
+        // WHEN
+        ResidentInfo residentInfoResult = alertService.getPersonInformation(firstName, lastName);
+        // THEN
+        assertThat(residentInfoResult).isNull();
+    }
+
+    @Test
+    public void getEmailListByCityTest() throws Exception {
+        // GIVEN
+        String city = "Culver";
+        // WHEN
+        List<String> emailList = alertService.getEmailListByCity(city);
+        // THEN
+        assertThat(emailList).isNotNull();
+        assertThat(emailList.size()).isGreaterThan(2);
+    }
+
+    @Test
+    public void getNullIfCityIsIncorrectEmailListByCityTest() throws Exception {
+        // GIVEN
+        String city = "Incorrect";
+        // WHEN
+        List<String> emailList = alertService.getEmailListByCity(city);
+        // THEN
+        assertThat(emailList).isNull();
+    }
 }

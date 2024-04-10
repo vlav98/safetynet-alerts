@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.swing.text.html.parser.Entity;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,9 +43,13 @@ public class FireStationController {
     }
 
     @DeleteMapping(value = "/fireStation")
-    public void delete(@RequestBody FireStation fireStation) {
+    public ResponseEntity<?> delete(@RequestBody FireStation fireStation) {
         logger.info("Received DELETE Request : /fireStation with Request Body : " + fireStation.toString());
-        fireStationService.deleteFireStation(fireStation);
+        if (fireStationService.deleteFireStation(fireStation)) {
+            return ResponseEntity.status(HttpStatus.OK).build();
+        } else {
+            return ResponseEntity.badRequest().body("Can not delete this firestation: this fire station you are trying to delete doesn't exist.");
+        }
     }
 
     @GetMapping(value = "/fireStation")

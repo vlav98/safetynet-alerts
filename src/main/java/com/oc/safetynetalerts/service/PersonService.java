@@ -20,8 +20,8 @@ public class PersonService {
         return personRepository.updateByFullName(person);
     }
 
-    public void deletePerson(Person person) {
-        personRepository.deleteByFullName(person.getFirstName(), person.getLastName());
+    public boolean deletePerson(Person person) {
+        return personRepository.deleteByFullName(person.getFirstName(), person.getLastName());
     }
 
     public List<Person> getAllPersons() {

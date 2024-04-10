@@ -45,9 +45,13 @@ public class PersonController {
 
     @DeleteMapping
     @RequestMapping(value = "/person", method = RequestMethod.DELETE)
-    public void delete(@RequestBody Person person) {
+    public ResponseEntity<?> delete(@RequestBody Person person) {
         logger.info("Received DELETE Request : /person with Request Body : " + person.toString());
-        personService.deletePerson(person);
+        if (personService.deletePerson(person)) {
+            return ResponseEntity.status(HttpStatus.OK).build();
+        } else {
+            return ResponseEntity.badRequest().body("Can not delete this person: the person you are trying to delete doesn't exist.");
+        }
     }
 
     @GetMapping

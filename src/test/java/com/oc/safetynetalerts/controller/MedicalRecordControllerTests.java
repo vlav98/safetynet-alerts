@@ -53,7 +53,6 @@ public class MedicalRecordControllerTests {
     @Test
     public void addMedicalRecordTest() throws Exception {
         // GIVEN
-
         // WHEN
         Mockito.when(medicalRecordService.createMedicalRecord(medicalRecord)).thenReturn(true);
         MvcResult mvcResult  = mockMvc.perform(post("/medicalRecord")
@@ -70,9 +69,8 @@ public class MedicalRecordControllerTests {
     }
 
     @Test
-    void shouldThrowBadRequestExceptionOnAddition() throws Exception {
+    void shouldThrowBadRequestExceptionOnAdditionTest() throws Exception {
         // GIVEN
-
         // WHEN
         Mockito.when(medicalRecordService.createMedicalRecord(medicalRecord)).thenReturn(false);
         MvcResult mvcResult  = mockMvc.perform(post("/medicalRecord")
@@ -87,6 +85,7 @@ public class MedicalRecordControllerTests {
 
     @Test
     public void updateMedicalRecordByFullNameTest() throws Exception {
+        // GIVEN
         // WHEN
         Mockito.when(medicalRecordService.updateMedicalRecord(medicalRecord)).thenReturn(true);
         MvcResult mvcResult  = mockMvc.perform(patch("/medicalRecord")
@@ -106,9 +105,8 @@ public class MedicalRecordControllerTests {
     }
 
     @Test
-    void shouldThrowBadRequestExceptionOnEdition() throws Exception {
+    void shouldThrowBadRequestExceptionOnEditionTest() throws Exception {
         // GIVEN
-
         // WHEN
         Mockito.when(medicalRecordService.updateMedicalRecord(medicalRecord)).thenReturn(false);
         MvcResult mvcResult  = mockMvc.perform(patch("/medicalRecord")
@@ -123,7 +121,9 @@ public class MedicalRecordControllerTests {
 
     @Test
     public void deleteMedicalRecordByFullNameTest() throws Exception {
+        // GIVEN
         // WHEN
+        Mockito.when(medicalRecordService.deleteMedicalRecord(medicalRecord)).thenReturn(true);
         mockMvc.perform(MockMvcRequestBuilders
                         .delete("/medicalRecord")
                         .content(objectMapper.writeValueAsString(medicalRecord))
@@ -134,9 +134,24 @@ public class MedicalRecordControllerTests {
         Mockito.verify(medicalRecordService).deleteMedicalRecord(medicalRecord);
     }
 
+    @Test
+    public void shouldThrowBadRequestOnDeletionTest() throws Exception {
+        // GIVEN
+        // WHEN
+        Mockito.when(medicalRecordService.deleteMedicalRecord(medicalRecord)).thenReturn(false);
+        mockMvc.perform(MockMvcRequestBuilders
+                        .delete("/medicalRecord")
+                        .content(objectMapper.writeValueAsString(medicalRecord))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+
+
+        Mockito.verify(medicalRecordService).deleteMedicalRecord(medicalRecord);
+    }
+
 
     @Test
-    public void getAllMedicalRecords() throws Exception {
+    public void getAllMedicalRecordsTest() throws Exception {
         // WHEN
         MvcResult mvcResult  = mockMvc.perform(get("/medicalRecord"))
                 // THEN

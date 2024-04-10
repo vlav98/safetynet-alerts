@@ -21,8 +21,8 @@ public class FireStationService {
         return fireStationRepository.updateStationNumberByAddress(fireStation);
     }
 
-    public void deleteFireStation(FireStation fireStation) {
-        fireStationRepository.deleteByAddress(fireStation.getAddress());
+    public boolean deleteFireStation(FireStation fireStation) {
+        return fireStationRepository.deleteByAddress(fireStation.getAddress());
     }
 
     public List<FireStation> getAllFireStations(Optional<Integer> station) {

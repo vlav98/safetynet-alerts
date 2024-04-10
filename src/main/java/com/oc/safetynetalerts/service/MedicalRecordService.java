@@ -20,8 +20,8 @@ public class MedicalRecordService {
         return medicalRecordRepository.updateByFullName(medicalRecord);
     }
 
-    public void deleteMedicalRecord(MedicalRecord medicalRecord) {
-        medicalRecordRepository.deleteByFullName(medicalRecord);
+    public boolean deleteMedicalRecord(MedicalRecord medicalRecord) {
+        return medicalRecordRepository.deleteByFullName(medicalRecord);
     }
 
     public List<MedicalRecord> getAllMedicalRecords() {

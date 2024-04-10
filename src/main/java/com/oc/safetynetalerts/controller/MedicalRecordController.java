@@ -44,9 +44,13 @@ public class MedicalRecordController {
 
     @DeleteMapping
     @RequestMapping(value = "/medicalRecord", method = RequestMethod.DELETE)
-    public void delete(@RequestBody MedicalRecord medicalRecord) {
+    public ResponseEntity<?> delete(@RequestBody MedicalRecord medicalRecord) {
         logger.info("Received DELETE Request : /medicalRecord with Request Body : " + medicalRecord.toString());
-        medicalRecordService.deleteMedicalRecord(medicalRecord);
+        if (medicalRecordService.deleteMedicalRecord(medicalRecord)) {
+            return ResponseEntity.status(HttpStatus.OK).build();
+        } else {
+            return ResponseEntity.badRequest().body("Can not delete this medical record: the medical record you are trying to delete doesn't exist.");
+        }
     }
 
     @GetMapping

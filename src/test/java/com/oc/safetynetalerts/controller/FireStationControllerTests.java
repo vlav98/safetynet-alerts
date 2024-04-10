@@ -45,7 +45,6 @@ public class FireStationControllerTests {
     @Test
     public void addFireStationTest() throws Exception {
         // GIVEN
-
         // WHEN
         Mockito.when(fireStationService.createFireStation(fireStation)).thenReturn(true);
         MvcResult mvcResult  = mockMvc.perform(post("/fireStation")
@@ -62,9 +61,8 @@ public class FireStationControllerTests {
     }
 
     @Test
-    void shouldThrowBadRequestExceptionOnAddition() throws Exception {
+    void shouldThrowBadRequestExceptionOnAdditionTest() throws Exception {
         // GIVEN
-
         // WHEN
         Mockito.when(fireStationService.createFireStation(fireStation)).thenReturn(false);
         MvcResult mvcResult  = mockMvc.perform(post("/fireStation")
@@ -79,6 +77,7 @@ public class FireStationControllerTests {
 
     @Test
     public void updateFireStationByFullNameTest() throws Exception {
+        // GIVEN
         // WHEN
         Mockito.when(fireStationService.updateFireStation(fireStation)).thenReturn(true);
         MvcResult mvcResult  = mockMvc.perform(patch("/fireStation")
@@ -89,7 +88,6 @@ public class FireStationControllerTests {
                 .andExpect(status().isOk()).andReturn();
 
         FireStation resultFireStation = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), FireStation.class);
-
         Mockito.verify(fireStationService).updateFireStation(fireStation);
         Assertions.assertThat(resultFireStation)
                 .isNotNull()
@@ -98,9 +96,8 @@ public class FireStationControllerTests {
     }
 
     @Test
-    void shouldThrowBadRequestExceptionOnEdition() throws Exception {
+    void shouldThrowBadRequestExceptionOnEditionTest() throws Exception {
         // GIVEN
-
         // WHEN
         Mockito.when(fireStationService.createFireStation(fireStation)).thenReturn(false);
         MvcResult mvcResult  = mockMvc.perform(patch("/fireStation")
@@ -115,19 +112,35 @@ public class FireStationControllerTests {
 
     @Test
     public void deleteFireStationByFullNameTest() throws Exception {
+        // GIVEN
+        // WHEN
+        Mockito.when(fireStationService.deleteFireStation(fireStation)).thenReturn(true);
         mockMvc.perform(MockMvcRequestBuilders
                         .delete("/fireStation")
                         .content(objectMapper.writeValueAsString(fireStation))
                         .contentType(MediaType.APPLICATION_JSON))
+                //THEN
                 .andExpect(status().isOk());
-
-
         Mockito.verify(fireStationService).deleteFireStation(fireStation);
     }
 
+    @Test
+    public void shouldThrowBadRequestExceptionOnDeletionTest() throws Exception {
+        // GIVEN
+        // WHEN
+        Mockito.when(fireStationService.deleteFireStation(fireStation)).thenReturn(false);
+        mockMvc.perform(MockMvcRequestBuilders
+                        .delete("/fireStation")
+                        .content(objectMapper.writeValueAsString(fireStation))
+                        .contentType(MediaType.APPLICATION_JSON))
+                //THEN
+                .andExpect(status().isBadRequest());
+        Mockito.verify(fireStationService).deleteFireStation(fireStation);
+    }
 
     @Test
-    public void getAllFireStation() throws Exception {
+    public void getAllFireStationTest() throws Exception {
+        // GIVEN
         // WHEN
         MvcResult mvcResult  = mockMvc.perform(get("/fireStation"))
                 // THEN

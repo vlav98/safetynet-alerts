@@ -17,14 +17,17 @@ import java.util.Objects;
 
 @Service
 public class AlertService {
-    @Autowired
-    private PersonRepository personRepository;
+    private final PersonRepository personRepository;
 
-    @Autowired
-    private MedicalRecordRepository medicalRecordRepository;
+    private final MedicalRecordRepository medicalRecordRepository;
 
-    @Autowired
-    private FireStationRepository fireStationRepository;
+    private final FireStationRepository fireStationRepository;
+
+    public AlertService() {
+        personRepository = new PersonRepository();
+        medicalRecordRepository = new MedicalRecordRepository();
+        fireStationRepository = new FireStationRepository();
+    }
 
     /**
      * list of kids residing @ address
@@ -36,7 +39,6 @@ public class AlertService {
     public List<ChildAlertInfo> getChildrenList(String address) {
 
         List<Person> personsList = personRepository.findByAddress(address);
-
         if (personsList.isEmpty()) {
             return null;
         }
@@ -73,7 +75,6 @@ public class AlertService {
                         .build());
             }
         }
-
         return childAlertList;
     }
 
@@ -160,6 +161,9 @@ public class AlertService {
 
     public ResidentInfo getPersonInformation(String firstName, String lastName) {
         Person person = personRepository.findPeopleByFullName(firstName, lastName);
+        if (person == null) {
+            return null;
+        }
         MedicalRecord medicalRecord = medicalRecordRepository.findMedicalRecordByFullName(firstName, lastName);
 
         return ResidentInfo.builder()
